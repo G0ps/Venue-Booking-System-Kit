@@ -1,37 +1,30 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
-import { generalurl, usertorolesendpoint } from '../../../urls.mjs';
+import * as urls from '../../../urls.mjs';
 
 function App() {
-  const [data, setData] = useState(null)
-  const [error, setError] = useState(null)
+  const [userInfo , checkUserInfo] = useState(null);
 
   useEffect(() => {
-    fetch(`${generalurl}${usertorolesendpoint}`)
-      .then((res) => {
-        console.log(res);
-        
-        if (!res.ok) {
-          throw new Error('Network response was not ok')
-        }
-        return res.json()
-      })
-      .then((json) => setData(json))
-      .catch((err) => setError(err.message))
-  }, [])
+  fetch(`${urls.generalurl}${urls.getuserrole}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ userid: "23eca39" })
+  })
+  .then(res => res.json())
+  .then(data => 
+    {
+      checkUserInfo({"Id" : data.content.CollegeId,"Name" : data.content.Name,"Role":data.content.Role});
+    })
+  .catch(err => console.error("Error fetching user role:", err));
+  }, []);
 
   return (
-    <div className="App">
-            
-      {/* Display fetched data or loading/error states */}
-      <pre>
-        {error && `Error: ${error}`}
-        {!error && !data && 'Loading...'}
-        {data && JSON.stringify(data, null, 2)}
-      </pre>
-    </div>
-  )
+    <div></div>
+  );
 }
 
 export default App
